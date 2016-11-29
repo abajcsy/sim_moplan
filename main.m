@@ -1,30 +1,41 @@
 %Initial conditions:
-p.init = [pi/4    0.0    pi/4  0.0]';
+arm.init = [pi/4;    % theta1
+            0.0;     % dtheta1
+            pi/4;    % theta2
+            0.0];    % dtheta2
 
-p.g = 9.81;
-p.m1 = 1; % mass of link 1
-p.m2 = 1; % mass of link 2
-p.l1 = 1; % length of link 1
-p.l2 = 1; % length of link 2
+arm.g = 9.81; 
+arm.m1 = 1.0; % mass of link 1
+arm.m2 = 1.0; % mass of link 2
+arm.l1 = 1.0; % length of link 1
+arm.l2 = 1.0; % length of link 2
 
-p.d1 = p.l1/2; % center of mass distance along link 1 from the fixed joint
-p.d2 = p.l2/2; % center of mass distance along link 2 from the fixed joint
+arm.d1 = arm.l1/2; % center of mass distance along link 1 
+arm.d2 = arm.l2/2; % center of mass distance along link 2 
 
-p.I1 = 1/12*p.m1*p.l1^2; % moment of inertia of link 1 about COM
-p.I2 = 1/12*p.m2*p.l2^2; % moment of inertia of link 2 about COM
+% for various inertial equations, see: 
+% https://en.wikipedia.org/wiki/List_of_moments_of_inertia
+% used inertial around center of mass:
+%       I_center = m*L^2/3
+arm.I1 = (1/3)*arm.m1*arm.l1^2; % moment of inertia of link 1 about center of mass     
+arm.I2 = (1/3)*arm.m2*arm.l2^2; % moment of inertia of link 2 about center of mass
 
-%endZ = ForwardKin(p.l1,p.l2,p.init(1),p.init(3));
-x0 = endZ(1); % end effector initial position in world space
-y0 = endZ(2);
-p.Fx = 0;
-p.Fy = 0;
+% starting forces at end-effector
+arm.Fx = 0;
+arm.Fy = 0;
 
-%%%%%%%% Control Parameters %%%%%%%%
+% controller gains
+arm.Kp = 10; % stiffness
+arm.Kd = 8;  % damping
 
-% controller Gains
-p.Kp = 10;
-p.Kd = 8;
+% get end effector initial position in world space
+ee_state = forward_kin(arm.l1,arm.l2,arm.init(1),arm.init(3))
+x0 = ee_state(1); 
+y0 = ee_state(2);
 
-% single target:
-p.xtarget = x0; % goal location in world space
-p.ytarget = y0;
+% goal location in world space
+arm.xtarget = x0 
+arm.ytarget = y0
+
+% run simulation
+plot_sim(arm)
