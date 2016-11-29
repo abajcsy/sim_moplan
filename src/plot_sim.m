@@ -3,7 +3,8 @@ function plot_sim(arm)
 
     % name the whole window and define the mouse callback function
     f = figure;
-    set(f,'WindowButtonMotionFcn','','WindowButtonDownFcn',@click_down);
+%     set(f,'WindowButtonMotionFcn','','WindowButtonUpFcn',@click_up,'WindowButtonDownFcn',@click_down,'KeyPressFc',@key_press);
+    set(f,'WindowButtonMotionFcn','','WindowButtonDownFcn',@click_down,'KeyPressFc',@key_press);
     set(gcf,'Visible', 'off'); 
 
     figData.xtarget = [];
@@ -119,24 +120,24 @@ function plot_sim(arm)
         z1 = z2;
         told = tnew;
 
-        arm_pos = forward_kin(arm.l1,arm.l2,z1(1),z1(3))
-        x_dist = abs(arm_pos(1)-arm.xtarget);
-        y_dist = abs(arm_pos(2)-arm.ytarget);
-        if x_dist <= epsilon && y_dist <= epsilon
-            arm.xtarget = xy_goals(idx,1);
-            arm.ytarget = xy_goals(idx,2);
-       
-            % plot new target point
-            set(targetPt,'xData',arm.xtarget); 
-            set(targetPt,'yData',arm.ytarget);
-            if idx < num_waypts && user_click == false
-                idx = idx + 1;
-            elseif user_click == false
-                idx = 1;
-            else
-                user_click = false;
-            end
-        end
+%         arm_pos = forward_kin(arm.l1,arm.l2,z1(1),z1(3))
+%         x_dist = abs(arm_pos(1)-arm.xtarget);
+%         y_dist = abs(arm_pos(2)-arm.ytarget);
+%         if x_dist <= epsilon && y_dist <= epsilon
+%             arm.xtarget = xy_goals(idx,1);
+%             arm.ytarget = xy_goals(idx,2);
+%        
+%             % plot new target point
+%             set(targetPt,'xData',arm.xtarget); 
+%             set(targetPt,'yData',arm.ytarget);
+%             if idx < num_waypts && user_click == false
+%                 idx = idx + 1;
+%             elseif user_click == false
+%                 idx = 1;
+%             else
+%                 user_click = false;
+%             end
+%         end
         
         %%%%%%%%%%%%%%%%%%%%
 
@@ -151,9 +152,22 @@ function plot_sim(arm)
             user_click = true;
             arm.ytarget = figData.ytarget;
         end
-        set(targetPt,'xData',arm.xtarget); %Change the target point graphically.
+        set(targetPt,'xData',arm.xtarget); % change the target point graphically.
         set(targetPt,'yData',arm.ytarget);
 
+        ee_loc = forward_kin(arm.l1,arm.l2,z1(1),z1(3));
+        figData.xend = ee_loc(1);
+        figData.yend = ee_loc(2);
+        set(f,'UserData',figData);
+
+        % if got a force at the end-effector
+        if ~isempty(figData.Fx)
+            arm.Fx = figData.Fx;
+        end
+        if ~isempty(figData.Fy)
+            arm.Fy = figData.Fy;
+        end
+        
         % save current time 
         tstar = told; 
 
@@ -201,6 +215,15 @@ function plot_sim(arm)
     end
 end
 
+% When click-up occurs, disable the mouse motion detecting callback
+% function click_up(varargin)
+%     figData = get(varargin{1},'UserData');
+%     set(figData.fig,'WindowButtonMotionFcn','');
+%     figData.Fx = 0;
+%     figData.Fy = 0;
+%     set(varargin{1},'UserData',figData);
+% end
+
 % when click-down occurs, enable the mouse motion detecting callback
 function click_down(varargin)
     figData = get(varargin{1},'UserData');
@@ -224,4 +247,20 @@ function mouse_pos(varargin)
         figData.Fy = 10*(mousePos(1,2)-figData.yend);
     end
      set(varargin{1},'UserData',figData);
+end
+
+% any keypress switches from dragging the setpoint to applying a
+% disturbance.
+function key_press(hObject, eventdata, handles)
+
+figData = get(hObject,'UserData');
+
+figData.tarControl = ~figData.tarControl;
+
+    if figData.tarControl
+       disp('Mouse will change the target point of the end effector.')
+    else
+       disp('Mouse will apply a force on end effector.') 
+    end
+set(hObject,'UserData',figData);
 end
