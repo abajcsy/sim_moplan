@@ -69,42 +69,6 @@ matlabFunction(tau2Eq, 'file', 'grav_comp_tau2');
 %%%%%%%%%%%%%%%% Impedance control %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% rotating reference frames
-% er1 = [-sin(theta1);
-%        cos(theta1); 
-%        0]; 
-% er2 = [-sin(theta2+theta1);
-%        cos(theta2+theta1);
-%        0];
-% 
-% eth1 = [-cos(theta1);
-%         -sin(theta1);
-%         0];
-% eth2 = [-cos(theta2+theta1);
-%         -sin(theta2+theta1);
-%         0];
-% 
-% % a = fixed base point, b = elbow point
-% % c1 = link 1 center of mass, c2 = link 2 center of mass 
-% % e = end-effector
-% 
-% ra_c1 = d1*er1  % rotation of link 1 center of mass around base point
-% rb_c2 = d2*er2  % rotation of link 2 center of mass around elbow point
-% rb_e = l2*er2   % rotation of end-effector around elbow point
-% ra_b = l1*er1   % rotation of elbow point around base point
-% ra_c2 = ra_b + rb_c2    % rotation of link 2 center of mass around base point 
-% ra_e = ra_b + rb_e      % rotation of end-effector around base point
-
-% jacobian relating end effector velocity to joint space vel
-% i.e. x_dot = J(q)*dq
-% i.e. Ve = J*qv
-
-% velocities
-% Vc1 = d1*dtheta1*eth1;
-% VB = l1*dtheta1*eth1;
-% Vc2 = VB + d2*(dtheta2+dtheta1)*eth2;
-% Ve = VB + l2*(dtheta2+dtheta1)*eth2;
-
 V_c1 = [-d1*dtheta1*sin(theta1);
         d1*dtheta1*cos(theta1);
         0];

@@ -28,8 +28,10 @@ arm.Kd = 8;  % damping
 
 % get end effector initial position in world space
 ee_state = forward_kin(arm.l1,arm.l2,arm.init(1),arm.init(3))
-x0 = ee_state(1); 
-y0 = ee_state(2);
+x0 = -1;%ee_state(1); 
+y0 = 1.5;%ee_state(2);
+
+xy_state = inv_kin(arm.l1,arm.l2,x0,y0)
 
 % goal location in world space
 arm.xtarget = x0 
