@@ -70,7 +70,7 @@ G1 = m1*d1*g*cos(theta1) + m2*g*(d2*cos(theta1+theta2)+l1*cos(theta1));
 G2 = m2*g*d2*cos(theta1+theta2);
 
 tau_eqn1 = H11*ddtheta1 + H12*ddtheta2 - h*dtheta2^2 - 2*h*dtheta1*dtheta2 + G1 == tau1 + tau_a(1);
-tau_eqn2 = H22*ddtheta2 + H12*ddtheta1 + h*dtheta1^2 + G1 == tau2 + tau_a(2);
+tau_eqn2 = H22*ddtheta2 + H12*ddtheta1 + h*dtheta1^2 + G2 == tau2 + tau_a(2);
 
 sol = solve([tau_eqn1, tau_eqn2], [ddtheta1, ddtheta2]);
 eqn1 = sol.ddtheta1;
@@ -89,8 +89,8 @@ tau1Eq = simplify(subs(solve(eqn1,tau1),tau2,tau2Eq));
 % tau2Eq = H22*ddtheta2 + H12*ddtheta1 + h*dtheta1^2 + G1 - tau_a(2);
 % tau1Eq = H11*ddtheta1 + H12*ddtheta2 - h*dtheta2^2 - 2*h*dtheta1*dtheta2 + G1 - tau_a(1);
 % 
-% tau1Eq = g*((1/2)*m1 + m2)*l1*cos(theta1) + (1/2)*m2*l2*cos(theta1 + theta2);
-% tau2Eq = g*((1/2)*m2*l2*cos(theta1+theta2));
+% tau1Eq = g*(m1 + m2)*l1*cos(theta1) + g*m2*l2*cos(theta1 + theta2);
+% tau2Eq = g*m2*l2*cos(theta1+theta2);
 
 matlabFunction(tau1Eq, 'file', 'grav_comp_tau1');
 matlabFunction(tau2Eq, 'file', 'grav_comp_tau2');
@@ -125,3 +125,25 @@ ztdot = [xdott;
 tau_a = J'*(Kp*(zt - ee_kin) + Kd*(ztdot - J*[dtheta1 dtheta2]'));
 
 matlabFunction(tau_a, 'file', 'impedence_control');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% PD control %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+M11 = (m1+m2)*l1^2 + m2*l2^2 + 2*m2*l1*l2*cos(theta2);
+M12 = m2*l2^2 + m2*l1*l2*cos(theta2);
+M21 = m2*l2^2 + m2*l1*l2*cos(theta2);
+M22 = m2*l2^2;
+M = [M11, M12;
+     M21, M22]; 
+
+V1 = -m2*l1*l2*(2*dtheta1*dtheta2 + dtheta2^2)*sin(dtheta2)
+V2 = m2*l1*l2*dtheta1^2*sin(theta2)
+V = [V1; V2]  
+
+G1 = g*(m1 + m2)*l1*cos(theta1) + g*m2*l2*cos(theta1 + theta2);
+G2 = g*m2*l2*cos(theta1+theta2);
+G = [G1;G2];
+%tau_PD = M*([ddtheta1;ddtheta2] + Kd*(ztdot - J*[dtheta1 dtheta2]') + Kp*(zt - ee_kin)) + V + G
+
+%matlabFunction(tau_PD, 'file', 'PD_control');

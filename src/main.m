@@ -24,7 +24,7 @@ arm.Fy = 0;
 
 % controller gains
 arm.Kp = 10; % stiffness
-arm.Kd = 8;  % damping
+arm.Kd = 6;  % damping
 
 % get end effector initial position in world space
 ee_state = forward_kin(arm.l1,arm.l2,arm.init(1),arm.init(3))

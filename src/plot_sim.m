@@ -3,8 +3,8 @@ function plot_sim(arm)
 
     % name the whole window and define the mouse callback function
     f = figure;
-%     set(f,'WindowButtonMotionFcn','','WindowButtonUpFcn',@click_up,'WindowButtonDownFcn',@click_down,'KeyPressFc',@key_press);
-    set(f,'WindowButtonMotionFcn','','WindowButtonDownFcn',@click_down,'KeyPressFc',@key_press);
+    set(f,'WindowButtonMotionFcn','','WindowButtonUpFcn',@click_up,'WindowButtonDownFcn',@click_down,'KeyPressFc',@key_press);
+    %set(f,'WindowButtonMotionFcn','','WindowButtonDownFcn',@click_down,'KeyPressFc',@key_press);
     set(gcf,'Visible', 'off'); 
 
     figData.xtarget = [];
@@ -120,24 +120,24 @@ function plot_sim(arm)
         z1 = z2;
         told = tnew;
 
-%         arm_pos = forward_kin(arm.l1,arm.l2,z1(1),z1(3))
-%         x_dist = abs(arm_pos(1)-arm.xtarget);
-%         y_dist = abs(arm_pos(2)-arm.ytarget);
-%         if x_dist <= epsilon && y_dist <= epsilon
-%             arm.xtarget = xy_goals(idx,1);
-%             arm.ytarget = xy_goals(idx,2);
-%        
-%             % plot new target point
-%             set(targetPt,'xData',arm.xtarget); 
-%             set(targetPt,'yData',arm.ytarget);
-%             if idx < num_waypts && user_click == false
-%                 idx = idx + 1;
-%             elseif user_click == false
-%                 idx = 1;
-%             else
-%                 user_click = false;
-%             end
-%         end
+        arm_pos = forward_kin(arm.l1,arm.l2,z1(1),z1(3))
+        x_dist = abs(arm_pos(1)-arm.xtarget);
+        y_dist = abs(arm_pos(2)-arm.ytarget);
+        if x_dist <= epsilon && y_dist <= epsilon
+            arm.xtarget = xy_goals(idx,1);
+            arm.ytarget = xy_goals(idx,2);
+       
+            % plot new target point
+            set(targetPt,'xData',arm.xtarget); 
+            set(targetPt,'yData',arm.ytarget);
+            if idx < num_waypts && user_click == false
+                idx = idx + 1;
+            elseif user_click == false
+                idx = 1;
+            else
+                user_click = false;
+            end
+        end
         
         %%%%%%%%%%%%%%%%%%%%
 
